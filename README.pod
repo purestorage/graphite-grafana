@@ -1,41 +1,21 @@
 =head1 Graphite and Grafana example for Pure Storage arrays
 
-Graphite (http://graphite.readthedocs.org/en/latest/) is a free monitoring tool that is used
-for storing numeric time-series data and for rendering basic graphs from this data.
+Graphite (http://graphite.readthedocs.org/en/latest/) is a open source monitoring tool 
+that is used for storing numeric time-series data and for rendering basic graphs from 
+this data.
 
-Grafana (http://grafana.org/) is free visualization dashboard software that can be used to
-render graphs from data within graphite.
+Grafana (http://grafana.org/) is a open source visualization dashboard software that 
+can be used to render graphs from the data within graphite.
 
 This document covers an example of using these tools to display status from Pure arrays.
 
-=head2 Pure SNMP
+=head2 Configuring the Pure Array
 
-SNMP is a common method for monitoring systems in a datacenter.
+The Pure REST API is available for automation and monitoring Pure Storage arrays. It 
+provides a secure way of retrieving details about the array.
 
-Currently, Pure Storage offers a static (non-trap) SNMP implementation that lists    
-6 array-wide metrics as part of their MIB:
-
-  Viewing: (1.3.6.1.4.1.40482)
-    
-  PURESTORAGE-MIB::pureArrayReadBandwidth.0 = INTEGER: 0 B/s
-  PURESTORAGE-MIB::pureArrayWriteBandwidth.0 = INTEGER: 0 B/s
-  PURESTORAGE-MIB::pureArrayReadIOPS.0 = INTEGER: 0 op/s
-  PURESTORAGE-MIB::pureArrayWriteIOPS.0 = INTEGER: 0 op/s
-  PURESTORAGE-MIB::pureArrayReadLatency.0 = INTEGER: 0 us/op
-  PURESTORAGE-MIB::pureArrayWriteLatency.0 = INTEGER: 0 us/op
-
-This is insufficient for most common monitoring concerns.
-
-=head2 Pure REST
-
-A full REST API is available for automation and monitoring Pure Storage arrays.
-
-Consequently, the preferred method for implementing monitoring is via this API.
-
-=head3 Configuring the Pure Array
-
-The assumption below is you have already followed instructions for generating an API    
-token. Generating a token is the only array-side configuration required.
+You will need to generate an API token for usage in the script described below. 
+Generating a token is the only array-side configuration required.
 
 =head3 Configuring Graphite
 
@@ -108,3 +88,15 @@ Per volume usage is reported as:
 =item purity.HOSTNAME.VOLNAME.max
 
 =back
+
+In this project is a screen capture of an example grafana dashboard: grafana-dashboard.jpg
+
+Each of the individual graphs in this example represent a pure array. They are produced 
+by graphing the array max versus the array used.
+
+IE: purity.dogfood-snausage.max and purity.dogfood-snausage.used
+
+The chart options was selected to be "Lines" with a line width of 1. A series specific 
+override of "line fill: 5" was applied to the "used" dataset.
+
+This can be done similarly for volumes.
