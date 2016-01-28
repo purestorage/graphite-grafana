@@ -1,0 +1,110 @@
+=head1 Graphite and Grafana example for Pure Storage arrays
+
+Graphite (http://graphite.readthedocs.org/en/latest/) is a free monitoring tool that is used
+for storing numeric time-series data and for rendering basic graphs from this data.
+
+Grafana (http://grafana.org/) is free visualization dashboard software that can be used to
+render graphs from data within graphite.
+
+This document covers an example of using these tools to display status from Pure arrays.
+
+=head2 Pure SNMP
+
+SNMP is a common method for monitoring systems in a datacenter.
+
+Currently, Pure Storage offers a static (non-trap) SNMP implementation that lists    
+6 array-wide metrics as part of their MIB:
+
+  Viewing: (1.3.6.1.4.1.40482)
+    
+  PURESTORAGE-MIB::pureArrayReadBandwidth.0 = INTEGER: 0 B/s
+  PURESTORAGE-MIB::pureArrayWriteBandwidth.0 = INTEGER: 0 B/s
+  PURESTORAGE-MIB::pureArrayReadIOPS.0 = INTEGER: 0 op/s
+  PURESTORAGE-MIB::pureArrayWriteIOPS.0 = INTEGER: 0 op/s
+  PURESTORAGE-MIB::pureArrayReadLatency.0 = INTEGER: 0 us/op
+  PURESTORAGE-MIB::pureArrayWriteLatency.0 = INTEGER: 0 us/op
+
+This is insufficient for most common monitoring concerns.
+
+=head2 Pure REST
+
+A full REST API is available for automation and monitoring Pure Storage arrays.
+
+Consequently, the preferred method for implementing monitoring is via this API.
+
+=head3 Configuring the Pure Array
+
+The assumption below is you have already followed instructions for generating an API    
+token. Generating a token is the only array-side configuration required.
+
+=head3 Configuring Graphite
+
+The assumption below is you have functioning graphite server that is configured to    
+received plaintext data via Carbon.    
+
+See the detail in: http://graphite.readthedocs.org/en/latest/feeding-carbon.html
+
+=head3 Sending data to Graphite with graphite-purestats.pl
+
+Included in this github project is a perl script (graphite-purestats.pl) that can    
+query one or more Pure arrays (via their API) and return the data in a format    
+useful for graphite.
+
+On lines 20 and 21, set the keys and values of the hash to be the hostnames and
+API tokens for those hostnames respectively. The script will query each of these arrays
+in turn.
+
+This script outputs the formatted data via STDOUT. Using netcat you can then send 
+that data to your graphite server. It is common to set this command to be a regular
+cron job:
+
+=over 4
+
+*/5 * * * *  ./purestats.pl | nc -w 2 graphiteserver.mycompany.com 2003
+
+=back
+
+=head3 Example output of graphite-purestats.pl
+
+Hostname is "dogfood-snausage"
+Volume names are "build01", "workloads01", "workloads02", "workloads03", and "workloads04"
+
+Example output:
+
+ purity.dogfood-snausage.used 44138771525632 1454016926
+ purity.dogfood-snausage.max 55987505333248 1454016926
+ purity.dogfood-snausage.vol.workloads01.used 2757878437888 1454016926
+ purity.dogfood-snausage.vol.workloads01.max 10995116277760 1454016926
+ purity.dogfood-snausage.vol.workloads02.used 1741355125760 1454016926
+ purity.dogfood-snausage.vol.workloads02.max 10995116277760 1454016926
+ purity.dogfood-snausage.vol.workloads03.used 1705753866240 1454016926
+ purity.dogfood-snausage.vol.workloads03.max 10995116277760 1454016926
+ purity.dogfood-snausage.vol.workloads04.used 1473153178624 1454016926
+ purity.dogfood-snausage.vol.workloads04.max 10995116277760 1454016926
+ purity.dogfood-snausage.vol.build01.used 1263123253248 1454016926
+ purity.dogfood-snausage.vol.build01.max 10995116277760 1454016926
+
+=head3 Creating graphs in Grafana
+
+Full instructions for the usage of Grafana is outside of the scope of this document. 
+However, as illustrated above there are two basic groupings of data.
+
+Overall array usage is reported as:
+
+=over 4
+
+=item purity.HOSTNAME.used
+
+=item purity.HOSTNAME.max
+
+=back
+
+Per volume usage is reported as:
+
+=over 4
+
+=item purity.HOSTNAME.VOLNAME.used
+
+=item purity.HOSTNAME.VOLNAME.max
+
+=back

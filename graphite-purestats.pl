@@ -1,9 +1,9 @@
 #!/usr/bin/env perl
 #
-# A generic check to generate graphite input from Pure arrays.
-# it reports overall and volume usage on arrays
+# A generic check to poll graphite data from Pure arrays.
+# it reports overall and volume usage on arrays.
 # 
-# By: Phil Pollard <phillip@purestorage.com>
+# By: Phillip Pollard <phillip@purestorage.com>
 
 use Data::Dumper;
 use REST::Client;
@@ -17,9 +17,8 @@ my $cookie_file = "/tmp/statcookies.txt";
 
 # pureadmin create --api-token
 my %api_tokens = ( 
-  'dogfood-alpo' => 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX',
-  'dogfood-gravytrain' => 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX',
-  'dogfood-snausage' => 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX',
+  'my-pure-array1.company.com' => 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX',
+  'my-pure-array2.company.com' => 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX',
 );
 
 our %ENV;
