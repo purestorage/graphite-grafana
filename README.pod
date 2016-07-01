@@ -30,7 +30,7 @@ Included in this github project is a perl script (graphite-purestats.pl) that ca
 query one or more Pure arrays (via their API) and return the data in a format    
 useful for graphite.
 
-On lines 20 and 21, set the keys and values of the hash to be the hostnames and
+On lines 15 and 16, set the keys and values of the hash to be the hostnames and
 API tokens for those hostnames respectively. The script will query each of these arrays
 in turn.
 
