@@ -19,6 +19,7 @@ my %api_tokens = (
 ### Start 
 
 my $client;
+my $debug = 0;
 
 for my $host ( sort keys %api_tokens ) {
   my $token = $api_tokens{$host};
